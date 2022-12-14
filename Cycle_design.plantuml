@@ -1,0 +1,180 @@
+@startuml Hilo Game Design 
+!define DARKRED
+!includeurl https://raw.githubusercontent.com/Drakemor/RedDress-PlantUML/master/style.puml
+
+package game {
+
+    package casting {
+        class Actor {
+            - self._text = ""
+            - self._font_size = 15
+            - self._color = Color(255, 255, 255)
+            - self._position = Point(0, 0)
+            - self._velocity = Point(0, 0)
+            ---
+            get_color(self)
+            get_font_size(self)
+            get_position(self)
+            get_text(self)
+            get_velocity(self)
+            move_next(self)
+            set_color(self, color)
+            set_position(self, position)
+            set_font_size(self, font_size)
+            set_text(self, text)
+            set_velocity(self, velocity)
+        }
+
+        class Cast {
+            self._actors = {}
+            ---
+            add_actor(self, group, actor)
+            get_actors(self, group)
+            get_all_actors(self)
+            get_first_actor(self, group)
+            get_second_actor(self, group)
+            remove_actor(self, group, actor)
+        }
+
+        class Cycle {
+            super().__init__()
+            self._cycle_color = color
+            self._segments = []
+            self._prepare_body(location)
+            ---
+            get_segments(self)
+            move_next(self)
+            get_head(self)
+            grow_tail(self, number_of_segments)
+            turn_head(self, velocity)
+            _prepare_body(self, location)
+        }
+
+        class Score {
+            self._points = 0
+            self.add_points(0)
+            ---
+            add_points(self, points)
+        }
+
+    }
+
+    package directing {
+        class Director {
+            self._video_service = video_service
+            ---
+            start_game(self, cast, script)
+            _execute_actions(self, group, cast, script)
+        }
+
+    }
+
+    package scripting {
+        class Action {
+            execute(self, cast, script)
+        }
+
+        class ControlActorsAction {
+            self._keyboard_service = keyboard_service
+            self._direction = Point( 0, constants.CELL_SIZE)
+            self._direction2 = Point(0, constants.CELL_SIZE)
+            ---
+            execute(self, cast, script)
+
+        }
+
+        class DrawActorsAction {
+            self._video_service = video_service
+            ---
+            execute(self, cast, script)
+
+        }
+
+        class HandleCollisionsAction {
+            self._is_game_over = False
+            ---
+            execute(self, cast, script)
+            _handle_segment_collision(self, cast)
+            _handle_game_over(self, cast)
+
+        }
+
+        class MoveActorsAction {
+            execute(self, cast, script)
+
+        }
+
+        class Script {
+            self._actions = {}
+            ---
+            add_action(self, group, action)
+            get_actions(self, group)
+            remove_action(self, group, action)
+
+        }
+
+    }
+
+    package services {
+        class KeyboardService {
+            self._keys = {}
+        
+            self._keys['w'] = pyray.KEY_W
+            self._keys['a'] = pyray.KEY_A
+            self._keys['s'] = pyray.KEY_S
+            self._keys['d'] = pyray.KEY_D
+
+            self._keys['i'] = pyray.KEY_I
+            self._keys['j'] = pyray.KEY_J
+            self._keys['k'] = pyray.KEY_K
+            self._keys['l'] = pyray.KEY_L
+            ---
+            is_key_up(self, key)
+            is_key_down(self, key)
+        }
+
+        class VideoService {
+            self._debug = debug
+            ---
+            close_window(self)
+            clear_buffer(self)
+            draw_actor(self, actor, centered=False)
+            draw_actors(self, actors, centered=False)
+            flush_buffer(self)
+            is_window_open(self)
+            open_window(self)
+            _draw_grid(self)
+            _get_x_offset(self, text, font_size)
+        }
+
+    }
+
+    package shared {
+        class Color {
+            self._red = red
+            self._green = green
+            self._blue = blue 
+            self._alpha = alpha
+            ---
+            to_tuple(self)
+            get_x(self)
+            get_y(self)
+            reverse(self)
+            scale(self, factor)
+        }
+
+        class Point {
+            self._x = x
+            self._y = y
+            ---
+            add(self, other)
+            equals(self, other)
+
+
+        }
+
+    }
+
+}
+
+@enduml
